@@ -8,7 +8,7 @@ or any other database, and link the container to the php's container*
 - ***NodeJs** is not preinstalled, but it's stable repository is added to sources.list in the 
 base image (`ubuntu/base` image)*
 
-
+```
     /ubuntu                     // Base OS, all images under it are ubuntu based
     
     /ubuntu/base                // The modified OS image, there were added Ondrej's ppa 
@@ -18,8 +18,9 @@ base image (`ubuntu/base` image)*
     
     /ubuntu/nginx-php7.0-fpm    // Containes Nginx 1.10 and PHP 7.0 with fpm module
     
-    
-    
+```  
+
+
 ## Setup
 
 
