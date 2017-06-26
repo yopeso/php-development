@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
-service apache2 start
-
+chown -R www-data:www-data /var/www
+service php7.0-fpm restart
+service nginx restart
 tail -f /dev/null

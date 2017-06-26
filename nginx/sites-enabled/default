@@ -1,0 +1,65 @@
+upstream php {
+        #server unix:/run/php/php7.0-fpm.sock;
+        server 127.0.0.1:9000;
+}
+
+server {
+
+        ## Server Defaults
+        listen 80 default_server;
+        listen [::]:80;
+
+
+        ## SSL
+        listen 443 ssl;
+        listen [::]:443 ssl;
+
+        ssl_certificate     /etc/nginx/ssl/nginx.crt;
+        ssl_certificate_key /etc/nginx/ssl/nginx.key;
+        ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers         HIGH:!aNULL:!MD5;
+
+
+        server_name _;
+
+        root /var/www/html;
+        index index.php;
+
+
+        ## Log Files
+        error_log /var/log/nginx/error.log;
+
+        location / {
+                # No php is touched for static content. Include "?$args" so non-default permalinks don't break when using query string.
+                try_files $uri $uri/ /index.php;
+        }
+
+        location ~ \.php$ {
+                # NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+                include /etc/nginx/fastcgi.conf;
+                fastcgi_intercept_errors on;
+                fastcgi_pass php;
+        }
+
+        #location ~* \.(eot|ttf|woff|svg|css|js|xml|jpe?g|png|gif|webm|mp4|ogv)$ {
+        #        add_header Access-Control-Allow-Origin *;
+        #        expires 90d;
+        #        add_header Pragma public;
+        #        add_header Cache-Control "public";
+        #}
+
+        location = /favicon.ico {
+                log_not_found off;
+                access_log off;
+                expires 30d;
+                add_header Pragma public;
+                add_header Cache-Control "public";
+        }
+
+        location = /robots.txt {
+                allow all;
+                log_not_found off;
+                access_log off;
+        }
+
+}
