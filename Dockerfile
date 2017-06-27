@@ -1,10 +1,9 @@
 FROM debian:jessie-slim
 
-MAINTAINER Oliviu Sivu <oliviu.sivu@yopeso.com>
-
 RUN DEBIAN_FRONTEND=noninteractive && \
     apt-get update -qq && \
-    apt-get -y install nginx
+    apt-get -y install nginx && \
+    apt-get -y install supervisor
 
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
@@ -26,10 +25,13 @@ RUN mkdir /scripts
 COPY services.sh /scripts
 RUN chmod +x /scripts/*
 
+COPY supervisord.conf /etc/supervisord.conf
+
 RUN apt-get autoclean
 
 EXPOSE 80
 
-ENTRYPOINT ["/scripts/services.sh"]
+CMD ["/scripts/services.sh"]
+
 
 
