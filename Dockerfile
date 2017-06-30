@@ -19,6 +19,7 @@ RUN echo "deb http://packages.dotdeb.org jessie all" >> /etc/apt/sources.list &&
                     php7.0-pgsql \
                     php7.0-mbstring \
                     php7.0-xml \
+                    php7.0-soap \
                     -y --allow-unauthenticated
 
 RUN mkdir /scripts
