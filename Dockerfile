@@ -1,23 +1,31 @@
-FROM ubuntu:16.04
+FROM elasticsearch
 
-MAINTAINER Claudiu Paul RODEAN <paul.rodean@yopeso.com>
+RUN apt-get update && \
+    apt-get -y install nginx && \
+    apt-get -y install supervisor
 
-# disable interactive mod, to prevent pty errors
-ENV DEBIAN_FRONTEND noninteractive
+RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log
 
-RUN apt-get update
-RUN apt-get install -y curl build-essential inetutils-ping
+RUN apt-get install php7.0-fpm \
+                    php7.0-gd \
+                    php7.0-curl \
+                    php7.0-mcrypt \
+                    php7.0-mysql \
+                    php7.0-pgsql \
+                    php7.0-mbstring \
+                    php7.0-xml \
+                    php7.0-soap \
+                    -y --allow-unauthenticated
 
-# Add php Ondrej PHP repo, for multiple versions of php, as for ubuntu 16.04 only version 7.0
-# is available
-RUN echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu xenial main" >> /etc/apt/sources.list \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-key 4F4EA0AAE5267A6C
+RUN mkdir /scripts
+COPY services.sh /scripts
+RUN chmod +x /scripts/*
 
+COPY supervisord.conf /etc/supervisord.conf
 
-# Add nodeJs official LTS repo
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
+RUN apt-get autoclean
 
+EXPOSE 80
 
-
-# update && dist-upgrade
-RUN apt-get update && apt-get -y dist-upgrade
+CMD ["/scripts/services.sh"]
