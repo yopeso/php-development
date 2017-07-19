@@ -1,22 +1,17 @@
-FROM elasticsearch
+FROM docker.elastic.co/elasticsearch/elasticsearch:5.5.0
 
-RUN apt-get update && \
-    apt-get -y install nginx && \
-    apt-get -y install supervisor
+USER root
+
+RUN curl 'https://setup.ius.io/' -o setup-ius.sh && bash setup-ius.sh
+
+RUN yum install php70u-fpm-nginx php70u-cli supervisor -y
+
+RUN yum install php70u-mysql php70u-xml php70u-soap php70u-xmlrpc -y
+RUN yum install php70u-mbstring php70u-json php70u-gd php70u-mcrypt -y
+RUN yum install php70u-pdo php70u-pdo_mysql -y
 
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
-
-RUN apt-get install php7.0-fpm \
-                    php7.0-gd \
-                    php7.0-curl \
-                    php7.0-mcrypt \
-                    php7.0-mysql \
-                    php7.0-pgsql \
-                    php7.0-mbstring \
-                    php7.0-xml \
-                    php7.0-soap \
-                    -y --allow-unauthenticated
 
 RUN mkdir /scripts
 COPY services.sh /scripts
@@ -24,7 +19,7 @@ RUN chmod +x /scripts/*
 
 COPY supervisord.conf /etc/supervisord.conf
 
-RUN apt-get autoclean
+RUN yum -y install initscripts && yum clean all
 
 EXPOSE 80
 
