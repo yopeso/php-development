@@ -1,23 +1,11 @@
-FROM ubuntu:16.04
+FROM php:7.3
 
-MAINTAINER Claudiu Paul RODEAN <paul.rodean@yopeso.com>
+RUN yes | pecl install xdebug \
+    && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_enable=1" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_idekey=PHPSTORM" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_log=/tmp/xdebug.log" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_host=host.docker.internal" >> /usr/local/etc/php/conf.d/xdebug.ini
 
-# disable interactive mod, to prevent pty errors
-ENV DEBIAN_FRONTEND noninteractive
-
-RUN apt-get update
-RUN apt-get install -y curl build-essential inetutils-ping
-
-# Add php Ondrej PHP repo, for multiple versions of php, as for ubuntu 16.04 only version 7.0
-# is available
-RUN echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu xenial main" >> /etc/apt/sources.list \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-key 4F4EA0AAE5267A6C
-
-
-# Add nodeJs official LTS repo
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
-
-
-
-# update && dist-upgrade
-RUN apt-get update && apt-get -y dist-upgrade
+WORKDIR /opt/project
